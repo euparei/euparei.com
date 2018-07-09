@@ -13,8 +13,21 @@
 
 	function frmEuParei_Submit(evento) {
 		evento.preventDefault();
-		outPareiDe.innerText = fixPareiDe(inPareiDe.value);
-		Utils.DOM.visible(outResultado);
+		var partes = inPareiEm.value.split('/');
+		var dia = partes[0];
+		var mes = partes[1];
+		var ano = partes[2];
+		var em = new Date(ano, mes - 1, dia);
+		var agora = new Date();
+		var resultado = {
+			pareiDe: fixPareiDe(inPareiDe.value),
+			anos: Utils.DATE.years(agora, em),
+			meses: Utils.DATE.months(agora, em),
+			dias: Utils.DATE.days(agora, em),
+			horas: 0,
+			minutos: 0
+		}
+		exibirResultado(resultado);
 		lnkCompartilhar.focus();
 	}
 
@@ -23,6 +36,19 @@
 		setTimeout(
 			function() { Utils.DOM.hide(outLinkCopiado); }, 3000
 		);
+	}
+
+// // // // // // // // // // // // // // // // // // // // // // // // //
+
+	function exibirResultado(resultado) {
+		outPareiDe.innerText = resultado.pareiDe;
+		outAnos.innerText = resultado.anos;
+		outMeses.innerText = resultado.meses;
+		outDias.innerText = resultado.dias;
+		outHoras.innerText = resultado.horas;
+		outMinutos.innerText = resultado.minutos;
+		document.location.hash = JSON.stringify(resultado);
+		Utils.DOM.visible(outResultado);
 	}
 
 // // // // // // // // // // // // // // // // // // // // // // // // //

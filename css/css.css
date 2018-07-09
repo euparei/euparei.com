@@ -12,7 +12,9 @@ a:hover h1 { color: #A179C7; }
 
 body { margin: 20px; background-color: #F7F7F8; }
 
+a.focusable { padding-left: 7px; padding-right: 7px; }
 a, a.low.lowlight { text-decoration: none; }
+a.low.lowlight { padding: 0; }
 a:hover { text-decoration: underline; }
 
 button { border-radius: 5px; width: 33px; height: 29px; background-color: #FFE; }
@@ -35,4 +37,4 @@ a.lowlight:hover { color: #666; }
 .in-parei { width: 200px; }
 .in-data, .in-hora { text-align: center; }
 .in-data { width: 125px; }
-.in-hora { width: 65px; }
+.in-hora { width: 67px; }
