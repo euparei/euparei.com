@@ -13,7 +13,9 @@
 
 	function frmEuParei_Submit(evento) {
 		evento.preventDefault();
-		exibirResultado(euPareiJson());
+		var euParei = euPareiJson();
+		exibirResultado(euParei);
+		salvarCookie(euParei);
 		setTimeout(
 			function() { lnkCompartilhar.focus(); }, 150
 		);
@@ -21,7 +23,7 @@
 
 	function lnkCompartilhar_Click(evento) {
 		evento.preventDefault();
-		salvar(euPareiJson());
+		salvarHash(euPareiJson());
 		inCopiador.value = document.location.href;
 		inCopiador.select();
 		document.execCommand('copy');
@@ -45,8 +47,16 @@
 		return euParei;
 	}
 
-	function salvar(euParei) {
+	function salvarCookie(euParei) {
+		Utils.COOKIES.set('ep', btoa(JSON.stringify(euParei)), 36525);
+	}
+
+	function salvarHash(euParei) {
 		document.location.hash = btoa(JSON.stringify(euParei));
+	}
+
+	function restaurarHash(hash) {
+		return JSON.parse(atob(hash));
 	}
 
 	function exibirResultado(euParei) {
@@ -112,7 +122,7 @@
 		}
 		sb.push(' sem <b>' + resultado.pareiDe + '</b>.');
 		outResultadoFrase.innerHTML = sb.join('');
-		salvar(euParei);
+		salvarHash(euParei);
 		Utils.DOM.visible(outResultado);
 	}
 
@@ -159,12 +169,28 @@
 		lnkCompartilhar.addEventListener('click', lnkCompartilhar_Click);
 	}
 
+	function initHash(evento) {
+		var hash = document.location.hash;
+		if (hash) {
+			hash = hash.substr(1);
+			var euParei = restaurarHash(hash);
+			if (euParei) {
+				inPareiDe.value = euParei.de;
+				inPareiEm.value = euParei.em;
+				inPareiAs.value = euParei.as;
+				var evento = new Event('submit');
+				frmEuParei.dispatchEvent(evento);
+			}
+		}
+	}
+
 	function init() {
 		initGlobals();
 		initAutoComplete();
 		initForms();
 		initInputs();
 		initLinks();
+		initHash();
 	}
 
 	window.addEventListener('load', init);
