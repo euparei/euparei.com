@@ -1,9 +1,9 @@
 (function() {
 
 	var frmEuParei;
-	var inPareiDe, inPareiEm, inPareiAs;
+	var inCopiador, inPareiDe, inPareiEm, inPareiAs;
 	var lnkCompartilhar;
-	var outResultado, outLinkCopiado, outPareiDe, outAnos, outMeses, outDias, outHoras, outMinutos;
+	var outResultado, outResultadoFrase, outLinkCopiado;
 
 // // // // // // // // // // // // // // // // // // // // // // // // //
 	function fixPareiDe(str) { return str == '' ? '???' : str; }
@@ -13,25 +13,21 @@
 
 	function frmEuParei_Submit(evento) {
 		evento.preventDefault();
-		var partes = inPareiEm.value.split('/');
-		var dia = partes[0];
-		var mes = partes[1];
-		var ano = partes[2];
-		var em = new Date(ano, mes - 1, dia);
-		var agora = new Date();
-		var resultado = {
-			pareiDe: fixPareiDe(inPareiDe.value),
-			anos: Utils.DATE.years(agora, em),
-			meses: Utils.DATE.months(agora, em),
-			dias: Utils.DATE.days(agora, em),
-			horas: 0,
-			minutos: 0
-		}
-		exibirResultado(resultado);
-		lnkCompartilhar.focus();
+		exibirResultado(euPareiJson());
+		setTimeout(
+			function() { lnkCompartilhar.focus(); }, 150
+		);
 	}
 
-	function lnkCompartilhar_Click() {
+	function lnkCompartilhar_Click(evento) {
+		evento.preventDefault();
+		salvar(euPareiJson());
+		inCopiador.value = document.location.href;
+		inCopiador.select();
+		document.execCommand('copy');
+		setTimeout(
+			function() { lnkCompartilhar.focus(); }, 100
+		);
 		Utils.DOM.unhide(outLinkCopiado);
 		setTimeout(
 			function() { Utils.DOM.hide(outLinkCopiado); }, 3000
@@ -40,15 +36,92 @@
 
 // // // // // // // // // // // // // // // // // // // // // // // // //
 
-	function exibirResultado(resultado) {
-		outPareiDe.innerText = resultado.pareiDe;
-		outAnos.innerText = resultado.anos;
-		outMeses.innerText = resultado.meses;
-		outDias.innerText = resultado.dias;
-		outHoras.innerText = resultado.horas;
-		outMinutos.innerText = resultado.minutos;
-		document.location.hash = JSON.stringify(resultado);
+	function euPareiJson() {
+		var euParei = {
+			de: inPareiDe.value,
+			em: inPareiEm.value, 
+			as: inPareiAs.value
+		};
+		return euParei;
+	}
+
+	function salvar(euParei) {
+		document.location.hash = btoa(JSON.stringify(euParei));
+	}
+
+	function exibirResultado(euParei) {
+		var partesEm = euParei.em.split('/');
+		var dia = partesEm[0];
+		var mes = partesEm[1];
+		var ano = partesEm[2];
+		var em = new Date(ano, mes - 1, dia);
+		var partesAs = euParei.as.split(':');
+		var as = {
+			horas: partesAs[0],
+			minutos: partesAs[1]
+		};
+		var agora = new Date();
+		var resultado = {
+			pareiDe: fixPareiDe(euParei.de),
+			anos: Utils.DATE.years(agora, em),
+			meses: Utils.DATE.months(agora, em),
+			dias: Utils.DATE.days(agora, em),
+			horas: Utils.DATE.hours(agora, as.horas),
+			minutos: Utils.DATE.minutes(agora, as.minutos)
+		};
+		var sb = [];
+		sb.push('Voc&ecirc; est&aacute; h&aacute; ');
+		if (resultado.anos > 0) {
+			sb.push('<b>' + resultado.anos + '</b> ano' + plural(resultado.anos, 's'));
+		}
+		if (resultado.meses > 0) {
+			if (resultado.anos > 0) {
+				if (resultado.dias > 0 || resultado.horas > 0 || resultado.minutos > 0) {
+					sb.push(', ');
+				} else {
+					sb.push(' e ');					
+				}
+			}
+			sb.push('<b>' + resultado.meses + '</b> m' + plural(resultado.meses, 'eses', '&ecirc;s'));
+		}
+		if (resultado.dias > 0 || (resultado.anos <= 0 && resultado.meses <= 0 && resultado.horas <= 0 && resultado.minutos <= 0)) {
+			if (resultado.anos > 0 || resultado.meses > 0) {
+				if (resultado.horas > 0 || resultado.minutos > 0) {
+					sb.push(', ');
+				} else {
+					sb.push(' e ');					
+				}
+			}
+			sb.push('<b>' + resultado.dias + '</b> dia' + plural(resultado.dias, 's'));
+		}
+		if (resultado.horas > 0) {
+			if (resultado.anos > 0 || resultado.meses > 0 || resultado.dias > 0) {
+				if (resultado.minutos > 0) {
+					sb.push(', ');
+				} else {
+					sb.push(' e ');					
+				}
+			}
+			sb.push('<b>' + resultado.horas + '</b> hora' + plural(resultado.horas, 's'));
+		}
+		if (resultado.minutos > 0) {
+			if (resultado.anos > 0 || resultado.meses > 0 || resultado.dias > 0 || resultado.horas > 0) {
+				sb.push(' e ');					
+			}
+			sb.push('<b>' + resultado.minutos + '</b> minuto' + plural(resultado.minutos, 's'));
+		}
+		sb.push(' sem <b>' + resultado.pareiDe + '</b>.');
+		outResultadoFrase.innerHTML = sb.join('');
+		salvar(euParei);
 		Utils.DOM.visible(outResultado);
+	}
+
+	function plural(n, strPlural, strSingular) {
+		if (n == 1) {
+			return strSingular ? strSingular : '';
+		} else {
+			return strPlural;
+		}
 	}
 
 // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -56,18 +129,14 @@
 	function initGlobals() {
 		frmEuParei = Utils.$('frm-eu-parei');
 		var frmEuPareiElements = frmEuParei.elements;
+		inCopiador = frmEuPareiElements['in-copiador'];
 		inPareiDe = frmEuPareiElements['in-parei-de'];
 		inPareiEm = frmEuPareiElements['in-parei-em'];
 		inPareiAs = frmEuPareiElements['in-parei-as'];
 		lnkCompartilhar = Utils.$('lnk-compartilhar');
 		outLinkCopiado = Utils.$('out-link-copiado');
 		outResultado = Utils.$('out-resultado');
-		outPareiDe = Utils.$('out-parei-de');
-		outAnos = Utils.$('out-anos');
-		outMeses = Utils.$('out-meses');
-		outDias = Utils.$('out-dias');
-		outHoras = Utils.$('out-horas');
-		outMinutos = Utils.$('out-minutos');
+		outResultadoFrase = Utils.$('out-resultado-frase');
 	}
 
 	function initAutoComplete() {

@@ -38,3 +38,5 @@ a.lowlight:hover { color: #666; }
 .in-data, .in-hora { text-align: center; }
 .in-data { width: 125px; }
 .in-hora { width: 67px; }
+
+.fora-da-tela { top: -9999px; position: absolute; }
