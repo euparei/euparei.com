@@ -2,7 +2,7 @@
 
 	var frmEuParei;
 	var inCopiador, inPareiDe, inPareiEm, inPareiAs;
-	var lnkCompartilhar;
+	var lnkCompartilhar, lnkNovo;
 	var outResultado, outResultadoFrase, outLinkCopiado;
 
 // // // // // // // // // // // // // // // // // // // // // // // // //
@@ -15,10 +15,16 @@
 		evento.preventDefault();
 		var euParei = euPareiJson();
 		exibirResultado(euParei);
-		salvarCookie(euParei);
+		if (evento.dontSaveCookie != true) {
+			salvarCookie(euParei);
+		}
 		setTimeout(
 			function() { lnkCompartilhar.focus(); }, 150
 		);
+	}
+
+	function lnkNovo_Click(evento) {
+		apagarCookie();
 	}
 
 	function lnkCompartilhar_Click(evento) {
@@ -30,9 +36,9 @@
 		setTimeout(
 			function() { lnkCompartilhar.focus(); }, 100
 		);
-		Utils.DOM.unhide(outLinkCopiado);
+		Utils.DOM.displayed(outLinkCopiado);
 		setTimeout(
-			function() { Utils.DOM.hide(outLinkCopiado); }, 3000
+			function() { Utils.DOM.undisplayed(outLinkCopiado); }, 3000
 		);
 	}
 
@@ -53,6 +59,15 @@
 
 	function salvarHash(euParei) {
 		document.location.hash = btoa(JSON.stringify(euParei));
+	}
+
+	function apagarCookie() {
+		Utils.COOKIES.del('ep');
+	}
+
+	function restaurarCookie() {
+		var cookie = Utils.COOKIES.get('ep');
+		return cookie ? restaurarHash(cookie) : null;
 	}
 
 	function restaurarHash(hash) {
@@ -144,12 +159,13 @@
 		inPareiEm = frmEuPareiElements['in-parei-em'];
 		inPareiAs = frmEuPareiElements['in-parei-as'];
 		lnkCompartilhar = Utils.$('lnk-compartilhar');
+		lnkNovo = Utils.$('lnk-novo');
 		outLinkCopiado = Utils.$('out-link-copiado');
 		outResultado = Utils.$('out-resultado');
 		outResultadoFrase = Utils.$('out-resultado-frase');
 	}
 
-	function initAutoComplete() {
+	function doDisableAutoComplete() {
 		inPareiDe.name = '';
 		inPareiEm.name = '';
 		inPareiAs.name = '';
@@ -167,18 +183,25 @@
 
 	function initLinks() {
 		lnkCompartilhar.addEventListener('click', lnkCompartilhar_Click);
+		lnkNovo.addEventListener('click', lnkNovo_Click);
 	}
 
-	function initHash(evento) {
-		var hash = document.location.hash;
-		if (hash) {
-			hash = hash.substr(1);
-			var euParei = restaurarHash(hash);
+	function doRestoring(evento) {
+		if (Utils.DOM.isVisible(frmEuParei)) {
+			var euParei;
+			var hash = document.location.hash;
+			if (hash) {
+				hash = hash.substr(1);
+				euParei = restaurarHash(hash);
+			} else {
+				euParei = restaurarCookie();
+			}
 			if (euParei) {
 				inPareiDe.value = euParei.de;
 				inPareiEm.value = euParei.em;
 				inPareiAs.value = euParei.as;
 				var evento = new Event('submit');
+				evento.dontSaveCookie = true;
 				frmEuParei.dispatchEvent(evento);
 			}
 		}
@@ -186,11 +209,11 @@
 
 	function init() {
 		initGlobals();
-		initAutoComplete();
 		initForms();
 		initInputs();
 		initLinks();
-		initHash();
+		doDisableAutoComplete();
+		doRestoring();
 	}
 
 	window.addEventListener('load', init);
