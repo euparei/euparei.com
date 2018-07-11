@@ -14,7 +14,7 @@
 	function frmEuParei_Submit(evento) {
 		evento.preventDefault();
 		var euParei = euPareiJson();
-		exibirResultado(euParei);
+		exibirResultado(euParei, evento.fromHash);
 		if (evento.dontSaveCookie != true) {
 			salvarCookie(euParei);
 		}
@@ -74,7 +74,7 @@
 		return JSON.parse(atob(hash));
 	}
 
-	function exibirResultado(euParei) {
+	function exibirResultado(euParei, fromHash) {
 		var partesEm = euParei.em.split('/');
 		var dia = partesEm[0];
 		var mes = partesEm[1];
@@ -95,7 +95,12 @@
 			minutos: Utils.DATE.minutes(agora, as.minutos)
 		};
 		var sb = [];
-		sb.push('Voc&ecirc; est&aacute; h&aacute; ');
+		if (fromHash) {
+			sb.push('Quem lhe mandou este link');
+		} else {
+			sb.push('Voc&ecirc;');
+		}
+		sb.push(' est&aacute; h&aacute; ');
 		if (resultado.anos > 0) {
 			sb.push('<b>' + resultado.anos + '</b> ano' + plural(resultado.anos, 's'));
 		}
@@ -188,13 +193,15 @@
 
 	function doRestoring(evento) {
 		if (Utils.DOM.isVisible(frmEuParei)) {
-			var euParei;
+			var euParei, fromHash;
 			var hash = document.location.hash;
 			if (hash) {
 				hash = hash.substr(1);
 				euParei = restaurarHash(hash);
+				fromHash = true;
 			} else {
 				euParei = restaurarCookie();
+				fromHash = false;
 			}
 			if (euParei) {
 				inPareiDe.value = euParei.de;
@@ -202,6 +209,7 @@
 				inPareiAs.value = euParei.as;
 				var evento = new Event('submit');
 				evento.dontSaveCookie = true;
+				evento.fromHash = fromHash;
 				frmEuParei.dispatchEvent(evento);
 			}
 		}
