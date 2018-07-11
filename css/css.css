@@ -40,3 +40,5 @@ a.lowlight:hover { color: #666; }
 .in-hora { width: 67px; }
 
 .fora-da-tela { top: -9999px; position: absolute; }
+
+.github-icon { top: 2px; position: relative; opacity: 0.3; }
