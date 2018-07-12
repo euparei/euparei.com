@@ -23,7 +23,6 @@ button { border-radius: 5px; width: 33px; height: 29px; background-color: #FFE; 
 .visibility-hidden { visibility: hidden; }
 
 .small { font-size: 0.8em; }
-.medium { font-size: 0.9em; }
 
 a.lowlight { color: #888; }
 a.lowlight:hover { color: #666; }
