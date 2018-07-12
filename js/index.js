@@ -159,7 +159,6 @@
 	function initGlobals() {
 		frmEuParei = Utils.$('frm-eu-parei');
 		var frmEuPareiElements = frmEuParei.elements;
-		inCopiador = frmEuPareiElements['in-copiador'];
 		inPareiDe = frmEuPareiElements['in-parei-de'];
 		inPareiEm = frmEuPareiElements['in-parei-em'];
 		inPareiAs = frmEuPareiElements['in-parei-as'];
@@ -168,6 +167,7 @@
 		outLinkCopiado = Utils.$('out-link-copiado');
 		outResultado = Utils.$('out-resultado');
 		outResultadoFrase = Utils.$('out-resultado-frase');
+		inCopiador = Utils.$('in-copiador');
 	}
 
 	function doDisableAutoComplete() {
