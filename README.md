@@ -12,3 +12,7 @@ Configuração Apache (Mac OS High Sierra):
 Permissão dos arquivos:
 
     chmod -R 755 /GitHub/
+
+Contato:
+
+    euparei.com@gmail.com
