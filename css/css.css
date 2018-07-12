@@ -12,7 +12,7 @@ a:hover h1 { color: #A179C7; }
 
 body { margin: 20px; background-color: #F7F7F8; }
 
-a.focusable { padding-left: 7px; padding-right: 7px; padding-bottom: 3px; }
+a.focusable { padding: 2px 7px 3px 7px; }
 a, a.low.lowlight { text-decoration: none; }
 a.low.lowlight { padding: 0; }
 a:hover { text-decoration: underline; }
