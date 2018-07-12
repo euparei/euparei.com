@@ -1,16 +1,14 @@
-# euparei.com
+# Eu Parei!
 
 https://euparei.github.io/
 
+Configuração Apache (Mac OS High Sierra):
 
-Apache confuguration (Mac OS High Sierra):
+    Alias /euparei "/GitHub/euparei.github.io/"
+    <Directory "/GitHub/euparei.github.io/">
+    	Require all granted
+    </Directory>
 
-Alias /euparei "~/Documents/GitHub/euparei.github.io/"
-<Directory "~/Documents/GitHub/euparei.github.io/">
-    Options FollowSymLinks Multiviews Indexes
-    MultiviewsMatch Any
-    AllowOverride All
-    Require all granted
-</Directory>
+Permissão dos arquivos:
 
-chmod -R 755 ~/Documents/GitHub/
+    chmod -R 755 /GitHub/
