@@ -1,5 +1,7 @@
 (function() {
 
+	var HASH_LOADED = false;
+
 	var frmEuParei;
 	var inCopiador, inPareiDe, inPareiEm, inPareiAs;
 	var lnkCompartilhar, lnkNovo;
@@ -215,7 +217,7 @@
 		}
 	}
 
-	function init() {
+	function window_Load() {
 		initGlobals();
 		initForms();
 		initInputs();
@@ -224,6 +226,11 @@
 		doRestoring();
 	}
 
-	window.addEventListener('load', init);
+	function window_HashChange() {
+		doRestoring();
+	}
+
+	window.addEventListener('load', window_Load);
+	window.addEventListener('hashchange', window_HashChange);
 
 })();
