@@ -1,7 +1,5 @@
 (function() {
 
-	var HASH_LOADED = false;
-
 	var frmEuParei;
 	var inCopiador, inPareiDe, inPareiEm, inPareiAs;
 	var lnkCompartilhar, lnkNovo;
